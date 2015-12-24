@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="notice">
+	
+	<insert id="insert" parameterType="NoticeVo">
+      <selectKey keyProperty="no" resultType="long" order="BEFORE">
+         select notice_no_seq.nextval from dual
+      </selectKey>
+      <![CDATA[
+      insert
+         into  notice (NOTICE_NO, NOTICE_TITLE, NOTICE_CONTENT, CREATED_DATE) 
+			values (#{no}, #{title }, #{content }, sysdate )
+			]]>
+</insert>
+	
+
+	<update id="update" parameterType="NoticeVo">
+	<![CDATA[
+		update notice
+		set notice_title=#{title } ,
+			notice_content=#{content }
+			where notice_no=#{no }
+	]]>
+	</update>
+
+	<select id="list" resultType="NoticeVo" parameterType="map">
+		<![CDATA[
+		SELECT * 
+  		  FROM ( SELECT rownum as rnum, C.* 
+	   			 FROM ( SELECT notice_no as no, notice_title as title, notice_content as content, to_char( created_date, 'yyyy-mm-dd ' ) as regDate 
+	            		  FROM notice
+					  ORDER BY created_date DESC ) C )
+	  	 WHERE #{start} <= rnum AND rnum < #{start} +#{size} order by rnum
+		]]>
+	</select>
+	
+	<select id="mainlist" resultType="NoticeVo">
+		<![CDATA[
+		SELECT * 
+  		  FROM ( SELECT rownum as rnum, C.* 
+	   			 FROM ( SELECT notice_no as no, notice_title as title, notice_content as content, to_char( created_date, 'yyyy-mm-dd ' ) as regDate 
+	            		  FROM notice
+					  ORDER BY created_date DESC ) C )
+	  	 WHERE rownum<=4
+		]]>
+	</select>
+
+	<select id="view" resultType="NoticeVo" parameterType="NoticeVo">
+		<![CDATA[
+		select notice_no as no, notice_title as title, notice_content as content, to_char( created_date,'yyyy-mm-dd ' ) as regDate
+		 from notice
+		 where notice_no=#{no }			
+		]]>
+	</select>
+
+	<select id="total" resultType="int" parameterType="Map">
+		select count(*) from notice 
+		<if test="kwd != null">
+			where title like '%${kwd}%' or content like '%${kwd}%'
+		</if>
+	</select>
+
+	<delete id="delete" parameterType="NoticeVo">
+		delete
+		from notice
+		where
+		notice_no=#{no }
+	</delete>
+
+</mapper>

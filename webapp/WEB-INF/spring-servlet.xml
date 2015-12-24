@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+	xmlns:mvc="http://www.springframework.org/schema/mvc">
+
+	<!-- 서블릿 컨테이너의 디폴트 서블릿 위임 햔들러 -->
+	<mvc:default-servlet-handler />
+
+	<!-- validator, conversionService, messageConverter를 자동으로 등록 -->
+	<mvc:annotation-driven>
+		<!-- argument resolver -->
+		<mvc:argument-resolvers>
+			<bean
+				class="com.dorothy.railway999.annotation.AuthMemberHandlerMethodArgumentResolver" />
+		</mvc:argument-resolvers>
+		<mvc:message-converters register-defaults="true">
+			<!-- 메세지 컨버터 등록 -->
+			<!-- String Message Converter : text/html -->
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes" value="text/html;charset=UTF-8" />
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	
+	<mvc:interceptors>
+	    <mvc:interceptor>
+        	<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/member/login" />
+			<mvc:exclude-mapping path="/member/logout" />
+			<mvc:exclude-mapping path="/bower_components/**" />
+			<mvc:exclude-mapping path="/plugins/**" />
+			<mvc:exclude-mapping path="/assets/**" />
+    		<bean class="com.dorothy.railway999.interceptor.AuthInterceptor" />
+        </mvc:interceptor>
+        <mvc:interceptor>
+        	<mvc:mapping path="/member/login" />
+    		<bean class="com.dorothy.railway999.interceptor.AuthLoginInterceptor" />
+        </mvc:interceptor>        
+        <mvc:interceptor>
+        	<mvc:mapping path="/member/logout" />
+    		<bean class="com.dorothy.railway999.interceptor.AuthLogoutInterceptor" />
+        </mvc:interceptor>     
+	</mvc:interceptors>
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.dorothy.railway999" />
+
+	<!-- 기본 뷰 리졸버 -->
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+		<property name="order" value="1" />
+	</bean>
+	
+	<!-- 멀티파트 리졸버 파일업로드처리2 -->
+	<bean id="multipartResolver" 
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 최대업로드 가능한 바이트크기 -->
+		<property name="maxUploadSize" value="52428800" />
+		<!-- 디스크에 임시 파일을 생성하기 전에 메모리에 보관할수있는 최대 바이트 크기 -->
+		<!-- property name="maxInMemorySize" value="52428800" /-->
+		<!-- defaultEncoding -->
+		<property name="defaultEncoding" value="utf-8" />
+	</bean>	
+	
+	<!-- 인터셉터 -->
+
+	
+
+
+	<!-- 메세지 컨버터 등록 -->
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<!--String Message Converter:text/html -->
+				<bean class = "org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes" value = "text/plain;charset=UTF-8" />
+  			</bean>
+  			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"> </bean>
+			</list>
+		</property>
+	</bean>
+
+</beans>

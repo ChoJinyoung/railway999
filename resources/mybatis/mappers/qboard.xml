@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="qboard">
+
+	<insert id="insert" parameterType="QboardVo">
+		<selectKey keyProperty="qboardno" resultType="long" order="BEFORE">
+			select
+			qaboard_no_seq.nextval from dual
+		</selectKey>
+		<![CDATA[
+		insert
+			into qaboard (QABOARD_NO, QABOARD_TITLE, QABOARD_CONTENT, VIEW_CNT, CREATED_DATE, MEMBER_NO )
+				values (#{qboardno }, #{title } , #{content }, 0, sysdate, #{memberno})
+				]]>
+	</insert>
+
+	<select id="mainlist" resultType="QboardVo">
+		<![CDATA[
+		SELECT * 
+  		  FROM ( SELECT rownum as rnum, C.* 
+	   			 FROM ( SELECT qaboard_no as qboardno, qaboard_title as title 
+	            		  FROM qaboard
+					  ORDER BY created_date DESC ) C )
+	  	 WHERE rownum<=4
+		]]>
+	</select>
+
+	<select id="list" resultType="QboardVo">
+		<![CDATA[
+		SELECT  A.qaboard_no as qboardno, 
+			    A.qaboard_title as title, 
+				A.qaboard_content as content, 
+				A.view_cnt as viewcnt, 
+				to_char( A.created_date, 'yyyy-mm-dd hh:mi:ss' ) as createdDate, 
+				A.member_no as memberno,
+				B.member_name as name		  
+		FROM 	qaboard A, member B
+		WHERE 	A.member_no = B.member_no
+		]]>
+	</select>
+
+	<select id="listPage" resultType="QboardVo" parameterType="Map">
+        <![CDATA[
+        select *
+		from ( select rownum as r, c.*
+		from ( select a.qaboard_no as qboardno,
+		a.qaboard_title as title,
+		a.qaboard_content as content,
+		a.member_no as memberno,
+		b.member_name as name,
+		a.view_cnt as viewcnt,
+		to_char( a.created_date, 'yyyy-mm-dd hh:mi:ss' ) as createdDate
+		from qaboard a, member b
+		where a.member_no = b.member_no
+		order by a.created_date desc ) c )
+		WHERE #{start} <= r AND r < #{start} +#{size} order by r
+		]]>
+	</select>
+
+	<select id="selectByNo" resultType="QboardVo" parameterType="QboardVo">
+	<![CDATA[ 
+	select  a.qaboard_no as qboardno, 
+			a.qaboard_title as title, 
+			a.qaboard_content as content,
+			b.member_no as memberno,
+			b.member_name as name,
+			to_char( a.created_date,'yyyy-mm-dd hh:mi:ss' ) as createdDate 
+	from 	qaboard a, member b 
+	where 	a.qaboard_no=#{qboardno } And a.MEMBER_NO = b.MEMBER_NO
+	]]>
+	</select>
+
+	<select id="getByNo" resultType="QboardVo" parameterType="long">
+		<![CDATA[
+		select  A.qaboard_no as qboardno, 
+			    A.qaboard_title as title, 
+				A.qaboard_content as content, 
+				A.view_cnt as viewcnt, 
+				to_char( A.created_date, 'yyyy-mm-dd hh:mi:ss' ) as createdDate, 
+				A.member_no as memberno,
+				B.member_name as name		  
+		FROM 	qaboard A, member B
+		WHERE 	A.member_no = B.member_no and A.qaboard_no = #{qboardno}
+		
+		]]>
+	</select>
+
+
+	<update id="update" parameterType="QboardVo">
+		<![CDATA[
+		update qaboard
+		   set qaboard_title = #{title}, qaboard_content = #{content }
+         where qaboard_no = #{qboardno}
+		]]>
+	</update>
+
+	<delete id="delete" parameterType="QboardVo">
+		<![CDATA[
+		delete
+		  from qaboard
+		where qaboard_no = #{qboardno}	
+		]]>
+	</delete>
+
+	<!--\total -->
+
+	<select id="total" resultType="int" parameterType="Map">
+		select count(*) from qaboard
+		<if test="kwd != null">
+			where title like '%${kwd}%' or content like '%${kwd}%'
+		</if>
+	</select>
+	
+	<update id="viewcnt" parameterType="Long">
+		<![CDATA[
+		update qaboard
+			set view_cnt = view_cnt +1
+			where QABOARD_NO = #{qboardno}
+		]]>
+	</update>
+
+</mapper>

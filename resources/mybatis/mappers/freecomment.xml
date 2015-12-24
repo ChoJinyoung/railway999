@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="freecomments">
+
+	<select id="commentList" parameterType="long" resultType="FreecommentVo">
+		<![CDATA[
+ SELECT A.free_comments_no AS freecommentsNo,
+	    B.freeboard_No AS freeboardNo,
+        M.member_name AS memberName,
+        A.free_content AS freeContent,
+        TO_CHAR (A.created_Date, 'yyyy-mm-dd hh:mi:ss') AS createdDate,
+        A.member_no AS memberNo
+  FROM free_comments A, freeboard B, MEMBER M
+ WHERE B.freeboard_No = #{freeboardNo} AND A.freeboard_no = #{freeboardNo} AND M.member_No = A.member_No
+    	]]>
+	</select>
+
+	<select id="selectbyno" resultType="FreecommentVo" parameterType="long">
+		<![CDATA[
+		  SELECT A.free_comments_no AS freecommentsNo,
+      			 M.member_name AS memberName,
+      			 A.free_content AS freeContent,
+       			 TO_CHAR (A.created_Date, 'yyyy-mm-dd hh:mi:ss') AS createdDate
+  		  FROM free_comments A, MEMBER M
+		  where  free_comments_no= #{freecommentsNo } and  A.member_No = M.member_No
+		]]>
+	</select>
+	
+	<select id="selectbyfreeboardno" resultType="FreecommentVo" parameterType="long">
+		<![CDATA[
+		  SELECT A.free_comments_no AS freecommentsNo,
+      			 M.member_name AS memberName,
+      			 A.free_content AS freeContent,
+      			 M.member_no AS memberNo,
+       			 TO_CHAR (A.created_Date, 'yyyy-mm-dd hh:mi:ss') AS createdDate
+  		  FROM free_comments A, MEMBER M
+		  where  freeboard_no= #{freeboardNo } and  A.member_No = M.member_No
+		]]>
+	</select> 
+	
+	
+		<insert id="insert" parameterType="FreecommentVo" >
+		<selectKey keyProperty="freecommentsNo" resultType="long" order="BEFORE">
+			select FREE_COMMENTS_SEQ.nextval from dual
+		</selectKey>
+		insert
+          into FREE_COMMENTS
+        values ( #{freecommentsNo }, #{freeContent }, #{freeboardNo} ,SYSDATE , #{memberNo} )
+	</insert>
+	
+	
+		<delete id="delete" parameterType="FreecommentVo">
+		<![CDATA[
+		delete
+		  from FREE_COMMENTS 
+		 where free_comments_no=#{freecommentsNo }  
+		]]> 
+	</delete>
+
+</mapper>

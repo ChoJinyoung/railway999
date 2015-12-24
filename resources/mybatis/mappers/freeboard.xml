@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="freeboard">
+
+<select id="selectList" parameterType="map" resultType="FreeboardVo">
+  <![CDATA[
+	SELECT *
+	  FROM (SELECT rownum as rnum, C.*
+			   FROM (SELECT  A.freeboard_no as freeboardNo, 
+						     A.freeboard_Title as freeboardTitle, 
+							 A.freeboard_Content as freeboardContent, 
+						 	 A.view_cnt as viewCnt, 
+						 	 to_char( A.created_Date, 'yyyy-mm-dd hh:mi:ss' ) as createdDate, 
+							 A.member_No as memberNo,  
+							 B.member_Name as memberName  
+			            FROM freeboard A, member B
+			   			WHERE A.member_No = B.member_No
+			   			ORDER BY freeboardNo desc) C )
+	 WHERE (#{page }-1 ) * #{pageSize } + 1 <= rnum AND rnum <=  #{page } * #{pageSize }
+  ]]>
+ 
+</select>
+
+<select id="mainlist" resultType="FreeboardVo">
+		<![CDATA[
+		SELECT * 
+  		  FROM ( SELECT rownum as rnum, C.* 
+	   			 FROM ( SELECT freeboard_no as freeboardNo, freeboard_Title as freeboardTitle 
+	            		  FROM freeboard
+					  ORDER BY created_date DESC ) C )
+	  	 WHERE rownum<=4
+		]]>
+	</select>
+
+	<select id="selectByNo" resultType="FreeboardVo" parameterType="long">
+		<![CDATA[
+	select  A.freeboard_no as freeboardNo, 
+			A.freeboard_Title as freeboardTitle, 
+			A.freeboard_Content as freeboardContent, 
+			A.view_cnt as viewCnt,
+			to_char( A.created_Date, 'yyyy-mm-dd hh:mi:ss' ) as createdDate, 
+			A.member_No as memberNo,  
+			B.member_Name as memberName
+	FROM 	freeboard A, member B
+	WHERE   A.MEMBER_NO = B.MEMBER_NO and A.freeboard_no = #{freeboardNo}
+		
+		]]>
+	</select>
+	
+	
+	
+ <insert id="insert" parameterType="FreeboardVo">
+		insert
+          into freeboard(freeboard_no, freeboard_title, freeboard_content,view_cnt,created_date, member_no )
+        values ( freeboard_no_seq.nextval, #{freeboardTitle }, #{freeboardContent }, #{viewCnt }, SYSDATE, #{memberNo} )
+</insert>
+
+	<delete id="delete" parameterType="map">
+		<![CDATA[
+		delete
+		  from freeboard 
+		where freeboard_no = #{freeboardNo}	
+		]]>
+	</delete>
+ 
+ 
+ 	<update id="update" parameterType="FreeboardVo">
+		<![CDATA[
+		update freeboard
+		   set freeboard_title = #{freeboardTitle }, freeboard_content = #{freeboardContent }
+         where freeboard_no = #{freeboardNo }
+		]]>			
+	</update>
+ 
+	
+	<update id="ViewCount" parameterType="long">
+		<![CDATA[
+		update freeboard
+		   set view_cnt = view_cnt + 1		
+         where freeboard_no = #{freeboardNo }
+		]]>			
+	</update>
+	
+	<select id="selectCount" resultType="long">
+	  <![CDATA[
+		select count(*) from freeboard
+	  ]]>		
+	</select>
+</mapper>

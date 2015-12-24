@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member">
+	<insert id="insert" parameterType="MemberVo">
+		<![CDATA[
+			insert 
+			into member (MEMBER_NO, MEMBER_NAME, PASSWORD, MEMBER_EMAIL, MEMBER_ROLE, CREATED_DATE)
+			values ( member_no_seq.nextval, #{name }, #{password }, #{email }, 'User', sysdate) 
+		]]>
+	</insert>
+	
+	<select id="Login" parameterType="MemberVo" resultType="MemberVo">
+	<![CDATA[
+	select member_no as no, 
+		   password,
+		   member_name as name, 
+		   member_email as email, 
+		   member_role as role
+		   from member
+		   where member_email=#{email }
+		   and password=#{password }
+	]]>
+	</select>
+	
+	<select id="List" resultType="MemberVo" >
+	<![CDATA[
+		select 	
+		member_no as no,
+		member_name as name, 
+		member_email as email, 
+		member_role as role, 
+		created_date as regDate
+		from member order by created_date DESC
+	]]>
+	</select>
+	
+	<select id="listpage" resultType="MemberVo" parameterType="hashMap">
+	<![CDATA[
+		select *   
+		from ( select rownum as rnum,   
+ 		A.*   
+		      from (   select member_no as no, 
+				   			  member_name as name, 
+							  member_email as email,  
+							  member_role as role, 
+							  to_char(created_date, 'yyyy-mm-dd hh:mi:ss') as regDate   
+		                      from member 
+		                  order by created_date desc ) A )   
+		          where ( #{page } - 1 ) * 5 + 1 <= rnum and rnum <= #{page } * 5 
+	]]>
+	</select>
+	
+	
+	<update id="Update" parameterType="MemberVo"> 
+		update member
+			   set member_name=#{name },
+			    password=#{password }
+			    where member_no=#{no }
+	</update>
+	
+	<delete id="Drop" parameterType="MemberVo">
+		delete   
+			from member
+			 where member_no=#{no }
+	</delete>
+</mapper>

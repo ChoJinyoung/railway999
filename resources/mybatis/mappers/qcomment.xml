@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="qcomments">
+
+	<select id="commentList" parameterType="long" resultType="QcommentsVo">
+			<![CDATA[
+			SELECT A.qa_comments_no AS qcommentsno,
+				   A.qaboard_No AS qaboardno,	
+				   M.member_name AS name,
+				   A.qa_content AS qcontent,
+				   TO_CHAR (A.created_Date, 'yyyy-mm-dd hh:mi:ss') AS createdDate,
+				   A.member_no AS memberno
+			FROM   qa_comments A, qaboard B, MEMBER M
+			WHERE  B.qaboard_No = #{qaboardno} AND A.qaboard_No = #{qaboardno} AND A.member_No = M.member_No
+	    	]]>
+	</select>
+	
+	<select id="getbyno" resultType="QcommentsVo" parameterType="long">
+		<![CDATA[
+		  SELECT A.qa_comments_no AS qcommentsno,
+				   M.member_name AS name,
+				   A.qa_content AS qcontent,
+				   TO_CHAR (A.created_Date, 'yyyy-mm-dd hh:mi:ss') AS createdDate
+  		  FROM 	   qa_comments A, MEMBER M
+		  where    qa_comments_no= #{qcommentsno } and  A.member_No = M.member_No
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="QcommentsVo" >
+		<selectKey keyProperty="qcommentsno" resultType="long" order="BEFORE">
+			select QA_COMMENTS_SEQ.nextval from dual
+		</selectKey>
+		
+		insert
+        into qa_comments
+        values ( #{qcommentsno }, #{qcontent }, #{qboardno} ,SYSDATE , #{memberno} )
+	</insert>
+	
+	<delete id="delete" parameterType="QcommentsVo">
+		<![CDATA[
+		delete
+		from QA_COMMENTS
+		where qa_comments_no = #{qcommentsno}	
+		]]>
+	</delete>
+</mapper>
