@@ -22,7 +22,6 @@ public class MemberController {
 	@RequestMapping("/logincheck")
 	public Map<String, Object> loginCheck(@ModelAttribute MemberVo vo){
 		MemberVo memberVo = memberService.login(vo);
-		System.out.println(memberVo);
 		Map<String, Object> map=new HashMap<String, Object>();
 		map.put("result", "success");
 		map.put("data", memberVo);

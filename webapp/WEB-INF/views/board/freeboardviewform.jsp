@@ -29,7 +29,6 @@
 
 <!-- Ajax Start -->
 <script>
-	var nono;
 	var fetchList = function() {
 	var freeboardNo = $("#freeboardNoco").val();
 	$.ajax( {
@@ -46,7 +45,6 @@
 			
 			//rendering
 			$.each( response.data, function(index, data){
-				console.log(data);
 				insertMessage( data, false);
 			});
 		},
@@ -59,8 +57,9 @@
 	 
 	
 var insertMessage = function( data, isHead ) {
-	var qcono = data.memberNo;
+	var nono;
 	var Authno = $("#memberNo").val();
+	var qcono = data.memberNo;
 	if (qcono == Authno){
 		nono = 1;
 	}else{
@@ -136,7 +135,6 @@ $(document).on( "click", ".delete-comment", function(){
 	var $a = $( this );
 	var no = $a.attr( "data-no" );
 	var nonono = $a.attr( "nono" );
-	
 	if (nonono == 1){
 	$.ajax( {
 		url : "/railway999/api/commend/delete",
@@ -145,7 +143,6 @@ $(document).on( "click", ".delete-comment", function(){
 		data: "freecommentsNo=" + no,
 		/* contentType: 'application/json', post 방식에서는 뺀다.*/
 		success: function( response ){
-			console.log( response );
 
 			if( response.result == "fail" ) {
 				console.error( response.message );
@@ -156,7 +153,6 @@ $(document).on( "click", ".delete-comment", function(){
 		error: function( jqXHR, status, e ){
 			console.error( status + " : " + e );
 		}
-		
 	});	
 	}else{
 		alert("삭제할 수 없습니다.");

@@ -158,14 +158,8 @@ var f = function(){
 		         var formEndTime = $.fullCalendar.formatDate(events.end, 'HH:mm:00');
 		         
 		         var startmydate = formDate  + "T" + formTime;
-		         var endmydate= formEndDate  + "T" + formEndTime;
-							
-				console.log("gggg"+endmydate);
-
+		         var endmydate= formEndDate  + "T" + formEndTime;	
 				 if (confirm("Are you sure about this change?")) {
-			            
-					 console.log("ddd"+startmydate);
-					 console.log("ddd"+endmydate);
 		            
 			            $.ajax({
 							url:'/railway999/api/travel/modify',
@@ -186,7 +180,6 @@ var f = function(){
 							console.log("code:"+request.status+"message:"+request.responseText+"error:"+error);
 							}
 						});
-			   
 				 }else{
 					 revertFunc();
 				     console.log('revert');

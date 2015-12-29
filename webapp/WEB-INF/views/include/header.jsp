@@ -107,7 +107,6 @@ $(function() {
 					<li class="dropdown"><a class="dropdown-toggle btn" data-toggle="dropdown" href="#" id="themes">은하철도999<span class="caret"></span></a>
 						<ul class="dropdown-menu" aria-labelledby="themes">
 							<li><a href="#intro" class="btn">999 소개</a></li>
-							<li><a href="#howtouse" class="btn">999 사용법</a></li>
 						</ul></li>
 						
 					<!-- 두번째 메뉴 -->	

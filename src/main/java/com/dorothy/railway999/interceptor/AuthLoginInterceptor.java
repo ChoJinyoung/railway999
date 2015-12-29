@@ -12,9 +12,6 @@ import com.dorothy.railway999.service.MemberService;
 import com.dorothy.railway999.vo.MemberVo;
 
 
-
-
-
 public class AuthLoginInterceptor extends HandlerInterceptorAdapter {
 	
 	@Override

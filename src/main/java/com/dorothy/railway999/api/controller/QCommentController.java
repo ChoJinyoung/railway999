@@ -26,7 +26,6 @@ public class QCommentController {
 	@RequestMapping("/list")
 	public Map<String, Object> list(@RequestParam(value="qboardno", required = true, defaultValue="")long no) {
 		List<QcommentsVo> list = qcommentService.listMessage(no);	
-		System.out.println(list);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put( "result", "success" );
 		map.put( "data", list );

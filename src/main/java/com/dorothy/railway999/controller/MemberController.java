@@ -43,7 +43,6 @@ public class MemberController {
 	public String modifyForm( HttpSession session , Model model ){
 		MemberVo vo = (MemberVo) session.getAttribute("AuthMember");
 		model.addAttribute( "vo", vo );
-		System.out.println(vo);
 		return "/member/modifyform";
 	}	
 	
